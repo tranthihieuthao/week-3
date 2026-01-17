@@ -1,0 +1,84 @@
+import nltk
+import re
+import string  
+# Download required NLTK resources (run once)
+nltk.download('punkt')
+nltk.download('punkt_tab')
+nltk.download('stopwords')
+nltk.download('wordnet')
+nltk.download('omw-1.4')
+
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+from nltk.stem import PorterStemmer, WordNetLemmatizer
+#Input text
+text = """""Hello! I'm Thao Tran (Age: 20). My Email is tranthihieuthao@gmail.com. I'm a Tech-Enthusiast (ID: #98k_User). I love 100% coding & solving [complex] problems @home. My goal: 'Building 24/7 innovative apps!' I'm fluent in Python/C++ & enjoy learning {skills} daily. Can we connect? +84-767230992."""""
+print("Original Text:", text)
+print ("-"*50)
+#tokenization
+tokens = word_tokenize(text)
+print("Tokens:", tokens)
+print ("-"*50)
+# lowercasing
+lower_tokens = [token.lower() for token in tokens]
+print("Lowercase Tokens:", lower_tokens)
+print ("-"*50)
+#stopword removal
+stop_words = set(stopwords.words('english'))
+filtered_tokens = [token for token in lower_tokens if token not in stop_words]
+print("Filtered Tokens (Stopwords Removed):", filtered_tokens)
+print ("-"*50)
+#punctuation removal
+punctuation_tokens = [token for token in filtered_tokens if token not in string.punctuation]
+print("Punctuation Removed Tokens:", punctuation_tokens)
+print ("-"*50)
+#stemming
+stemmer = PorterStemmer()
+stemmed_tokens = [stemmer.stem(token) for token in filtered_tokens]
+print("Stemmed Tokens:", stemmed_tokens)
+print ("-"*50)
+#lemmatization
+lemmatizer = WordNetLemmatizer()
+lemmatized_tokens = [lemmatizer.lemmatize(token) for token in filtered_tokens]
+print("Lemmatized Tokens:", lemmatized_tokens)
+print ("-"*50)
+#text normalization function
+def normalize_text(input_text):
+    tokens = word_tokenize(input_text)
+    lower_tokens = [token.lower() for token in tokens]
+    stop_words = set(stopwords.words('english'))
+    filtered_tokens = [token for token in lower_tokens if token not in stop_words]
+    punctuation_tokens = [token for token in filtered_tokens if token not in string.punctuation]
+    stemmer = PorterStemmer()
+    stemmed_tokens = [stemmer.stem(token) for token in punctuation_tokens]
+    lemmatizer = WordNetLemmatizer()
+    lemmatized_tokens = [lemmatizer.lemmatize(token) for token in punctuation_tokens]
+    return {
+        "tokens": tokens,
+        "lowercase": lower_tokens,
+        "filtered": filtered_tokens,
+        "punctuation_removed": punctuation_tokens,
+        "stemmed": stemmed_tokens,
+        "lemmatized": lemmatized_tokens
+    }
+normalized_tokens = normalize_text(text)
+print("Normalized Tokens:", normalized_tokens)
+print ("-"*50)
+#extract email addresses
+email_pattern = r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}'
+emails = re.findall(email_pattern, text)
+print("Extracted Email Addresses:", emails)
+print ("-"*50)
+#extract phone numbers
+phone_pattern = r'\+?\d[\d -]{8,}\d'
+phone_numbers = re.findall(phone_pattern, text)
+print("Extracted Phone Numbers:", phone_numbers)
+print ("-"*50)
+print("Punctuation Removed Tokens:", punctuation_tokens)
+print ("-"*50)
+#extract age
+age_pattern = r'Age:\s*(\d{1,3})'
+ages = re.findall(age_pattern, text)
+print("Extracted Ages:", ages)
+print ("-"*50)
+
