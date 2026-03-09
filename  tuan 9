@@ -1,0 +1,41 @@
+#Import necessary libraries and packages
+import nltk
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.metrics import  classification_report,confusion_matrix
+import matplotlib.pyplot as plt
+import seaborn as sns
+#download the reuters dataset from NLTK and load it
+nltk.download('reuters')
+from nltk.corpus import reuters
+#data preparation
+categories = ['grain', 'crude', 'trade']
+docs = [(reuters.raw(fid), reuters.categories(fid)[0]) for fid in reuters.fileids() if reuters.categories(fid)[0] in categories]
+texts, labels = zip(*docs)
+X_train,X_test,y_train,y_test=train_test_split(texts,labels,test_size=0.2,random_state=42)
+#text vectorization using TF-IDF
+TfidfVectorizer=TfidfVectorizer(stop_words='english',max_features=5000)
+X_train_tfidf=TfidfVectorizer.fit_transform(X_train)
+X_test_tfidf=TfidfVectorizer.transform(X_test)
+#model training and prediction
+classifier=MultinomialNB()
+classifier.fit(X_train_tfidf,y_train)
+y_pred=classifier.predict(X_test_tfidf)
+#evaluation
+print(classification_report(y_test,y_pred))
+print("===================================================")
+print(classification_report(y_test,y_pred,labels=categories))
+print("\n")
+#visualization of confusion matrix
+confusion_matrix=confusion_matrix(y_test,y_pred,labels=categories)
+print("Confusion Matrix:")
+print("===================================================")
+print(confusion_matrix)
+print("\n")
+#heatmap visualization of confusion matrix
+sns.heatmap(confusion_matrix, annot=True, fmt='d', cmap='Blues', xticklabels=categories, yticklabels=categories)
+plt.xlabel('Predicted')
+plt.ylabel('Actual')
+plt.title('Confusion Matrix Heatmap')
+plt.show()
